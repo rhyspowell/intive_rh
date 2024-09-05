@@ -65,7 +65,7 @@ module "htpasswd_idp" {
 
   name               = "starter-idp"
   idp_type           = "htpasswd"
-  htpasswd_idp_users = [{ username = var.admin_credentials_username, password = random_password.password.result }]
+  htpasswd_idp_users = [{ username = var.admin_credentials_username, password = var.admin_credentials_password }]
 }
 
 resource "rhcs_group_membership" "admin" {
@@ -73,15 +73,6 @@ resource "rhcs_group_membership" "admin" {
 
   user  = var.admin_credentials_username
   group = "cluster-admins"
-}
-
-resource "random_password" "password" {
-  length      = 14
-  special     = true
-  min_lower   = 1
-  min_numeric = 1
-  min_special = 1
-  min_upper   = 1
 }
 
 output "cluster-private-subnets" {
@@ -97,9 +88,4 @@ output "cluster-public-subnets" {
 output "cluster-subnets-string" {
   value       = join(",", concat(module.vpc.public_subnets, module.vpc.private_subnets))
   description = "Comma-separated string of all subnet IDs created for this cluster."
-}
-
-output "password" {
-  value     = random_password.password.result
-  sensitive = true
 }
